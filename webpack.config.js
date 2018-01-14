@@ -1,32 +1,53 @@
-var webpack = require('webpack')
-var _ = require('underscore')
+const webpack = require('webpack');
+const _ = require('underscore');
 
-var baseConfig = {
+const plugins = [
+  new webpack.optimize.ModuleConcatenationPlugin(),
+  new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false,
+      screw_ie8: true,
+      conditionals: true,
+      unused: true,
+      comparisons: true,
+      sequences: true,
+      dead_code: true,
+      evaluate: true,
+      if_return: true,
+      join_vars: true,
+    },
+    output: {
+      comments: false,
+    },
+  }),
+];
+
+const baseConfig = {
   resolve: {
     extensions: [
-      '',
       '.js',
       '.coffee',
-      '.scss'
-    ]
+      '.scss',
+    ],
   },
   entry: './src/coffee/card.coffee',
   output: {
-    path: __dirname + '/dist/',
+    path: `${__dirname}/dist/`,
     filename: 'card.js',
     library: 'card',
     libraryTarget: 'var',
   },
   module: {
     loaders: [
-      { test: /\.scss/, loaders: ["style-loader", "css-loader", "sass-loader"] },
-      { test: /\.json/, loader: "json-loader" },
-      { test: /\.coffee$/, loader: "coffee-loader" }
-    ]
-  }
-}
+      { test: /\.scss/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
+      { test: /\.json/, loader: 'json-loader' },
+      { test: /\.coffee$/, loader: 'coffee-loader' },
+    ],
+  },
+  plugins,
+};
 
-var jQueryConfig = _.defaults(
+const jQueryConfig = _.defaults(
   {
     entry: './src/coffee/jquery.card.coffee',
     output: {
@@ -36,13 +57,14 @@ var jQueryConfig = _.defaults(
       libraryTarget: 'var',
     },
     externals: {
-      "jquery": "jQuery"
-    }
+      jquery: 'jQuery',
+    },
+    plugins,
   },
-  baseConfig
-)
+  baseConfig,
+);
 
 module.exports = [
   baseConfig,
-  jQueryConfig
-]
+  jQueryConfig,
+];
